@@ -1,49 +1,31 @@
 import {Injectable} from "@nestjs/common";
-import * as fs from "fs";
-import * as path from 'path';
-import {ChatConfigService} from "../common/config/chat.config";
+import {UserService} from "./user.service";
+import {MessageService} from "./message.service";
 
 @Injectable()
 export class ChatService {
     constructor(
-        private readonly chatConfigService: ChatConfigService,
+        private readonly userService: UserService,
+        private readonly messageService: MessageService,
     ) {}
-    private usersPath = path.join(__dirname, this.chatConfigService.userPath);
-    private messagesPath = path.join(__dirname, this.chatConfigService.messagesPath);
 
     getUsers(): {[socketId: string]: string} {
-        try {
-            const users = JSON.parse(fs.readFileSync(this.usersPath, 'utf8'));
-            return users || {};
-        }
-        catch (error) {
-            return {};
-        }
+        return this.userService.getUsers();
     }
 
     saveUsers(users: {[socketId: string]: string}) {
-        fs.writeFileSync(this.usersPath, JSON.stringify(users), 'utf8');
+        this.userService.saveUsers(users);
     }
 
     getUserMessages (socketId: string): any[] {
-        const userMessagesPath = `${this.messagesPath}/${socketId}.json`;
-        if(!fs.existsSync(userMessagesPath)){
-            return [];
-        }
-        try {
-            return JSON.parse(fs.readFileSync(userMessagesPath, 'utf8')) || [];
-        }
-        catch(error) {
-            return [];
-        }
+        return this.messageService.getMessages(socketId);
     }
 
     saveUserMessages(socketId: string, messages: any[]): void {
-        const userMessagesPath = `${this.messagesPath}/${socketId}.json`;
-        fs.writeFileSync(userMessagesPath, JSON.stringify(messages), 'utf8');
+        this.messageService.saveMessages(socketId, messages);
     }
 
     getUserNickname(socketId: string){
-        return this.getUsers()[socketId];
+        return this.userService.getUsers()[socketId];
     }
 }
