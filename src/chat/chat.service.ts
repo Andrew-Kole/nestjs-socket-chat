@@ -1,6 +1,8 @@
 import {Injectable} from "@nestjs/common";
 import {UserService} from "./user.service";
 import {MessageService} from "./message.service";
+import {Message} from "./types/message.type";
+import {User} from "./types/user.type";
 
 @Injectable()
 export class ChatService {
@@ -9,19 +11,19 @@ export class ChatService {
         private readonly messageService: MessageService,
     ) {}
 
-    getUsers(): {[socketId: string]: string} {
+    getUsers(): User {
         return this.userService.getUsers();
     }
 
-    saveUsers(users: {[socketId: string]: string}) {
+    saveUsers(users: User) {
         this.userService.saveUsers(users);
     }
 
-    getUserMessages (socketId: string): any[] {
+    getUserMessages (socketId: string): Message[] {
         return this.messageService.getMessages(socketId);
     }
 
-    saveUserMessages(socketId: string, messages: any[]): void {
+    saveUserMessages(socketId: string, messages: Message[]): void {
         this.messageService.saveMessages(socketId, messages);
     }
 

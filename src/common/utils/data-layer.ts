@@ -1,19 +1,19 @@
 import * as fs from "fs";
 
 export class DataLayer {
-    static readData(filePath: string) {
+    static readData<T>(filePath: string): T {
         try {
             if(!fs.existsSync(filePath)){
-                return [];
+                return [] as T;
             }
             return JSON.parse(fs.readFileSync(filePath, 'utf8')) || {};
         }
         catch (error) {
-            return {};
+            return {} as T;
         }
     }
 
-    static writeData(filePath: string, data: any) {
+    static writeData(filePath: string, data: any): void {
         fs.writeFileSync(filePath, JSON.stringify(data), 'utf8');
     }
 }
